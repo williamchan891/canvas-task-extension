@@ -35,7 +35,7 @@ export default async function apiReq(
   } else {
     return await axios.delete(url, {
       ...headers,
-      data: JSON.parse(body),
+      data: body ? JSON.parse(body) : undefined,
       transformResponse: [(data) => JSONBigInt.parse(data)],
     });
   }

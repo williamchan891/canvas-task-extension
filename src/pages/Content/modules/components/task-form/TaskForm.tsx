@@ -125,9 +125,10 @@ export default function TaskForm({
         (selectedDate ? selectedDate?.valueOf() : new Date().valueOf()) +
           i * (RECUR_DELTA * 24 * 60 * 60 * 1000)
       );
-      dueDate.setHours(parseInt(selectedTime) / 60);
-      dueDate.setMinutes(parseInt(selectedTime) % 60);
-      dueDate.setSeconds(0);
+      const minutes = parseInt(selectedTime, 10);
+      dueDate.setHours(Math.floor(minutes / 60));
+      dueDate.setMinutes(minutes % 60);
+      dueDate.setSeconds(0, 0);
       assignment.due_at = dueDate.toISOString();
       assignment.course_id =
         selectedCourseId === ''
@@ -150,6 +151,7 @@ export default function TaskForm({
         setErrorMessage(
           'An error occurred. Make sure you have cookies enabled.'
         );
+        return;
       } else {
         assignment.id =
           res && !!res.id ? res.id.toString() : assignment.id.toString();

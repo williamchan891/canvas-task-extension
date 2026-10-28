@@ -19,8 +19,8 @@ export interface StoreInterface<Type> {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function makeSpec<Type>(root: string[], value: any) {
   // no error handling is done, assume all entries filled when initialized
-  root.push(''); // for the { $set: value } in the reduction
-  const spec = root
+  const path = [...root, '']; // for the { $set: value } in the reduction
+  const spec = path
     .reverse()
     .reduce((spec: Spec<Type, never>, key: string, i: number) => {
       if (i == 0) return { $set: value } as Spec<Type, never>;

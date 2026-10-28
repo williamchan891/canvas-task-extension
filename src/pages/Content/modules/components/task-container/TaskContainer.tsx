@@ -76,8 +76,11 @@ function TaskContainer({
   );
   const themeColor = options.theme_color || OptionsDefaults.theme_color;
 
-  const updatedAssignments = useMemo(() => {
+  useEffect(() => {
     setDelayLoad(false);
+  }, [assignmentStore.assignmentList]);
+
+  const updatedAssignments = useMemo(() => {
     let res = Object.values(assignmentStore.state);
     if (courseId) res = filterCourses([courseId], res);
     return filterTimeBounds(
@@ -87,7 +90,13 @@ function TaskContainer({
       true,
       options.show_long_overdue
     );
-  }, [assignmentStore.assignmentList, courseId]);
+  }, [
+    assignmentStore.assignmentList,
+    courseId,
+    startDate,
+    endDate,
+    options.show_long_overdue,
+  ]);
   const updatedAnnouncements = useMemo(() => {
     if (courseId)
       return filterCourses([courseId], Object.values(announcementStore.state));
@@ -204,7 +213,18 @@ function compareProps(
   prevProps: TaskContainerProps,
   nextProps: TaskContainerProps
 ) {
-  return prevProps.loading == nextProps.loading;
+  if (prevProps.loading && nextProps.loading) return true;
+  return (
+    prevProps.loading === nextProps.loading &&
+    prevProps.assignments === nextProps.assignments &&
+    prevProps.announcements === nextProps.announcements &&
+    prevProps.courseData === nextProps.courseData &&
+    prevProps.courseId === nextProps.courseId &&
+    prevProps.options === nextProps.options &&
+    prevProps.startDate.getTime() === nextProps.startDate.getTime() &&
+    prevProps.endDate.getTime() === nextProps.endDate.getTime() &&
+    prevProps.lms === nextProps.lms
+  );
 }
 
 export default React.memo(TaskContainer, compareProps);

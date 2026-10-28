@@ -40,21 +40,35 @@ export async function getPaginatedRequestBrightspace<T>(
   url: string,
   recurse = false
 ): Promise<T[]> {
-  const res = (await (await fetch(url)).json()) as PaginatedAPIResponse<T>;
-  if (recurse) {
-    if ('Next' in res && res.Next)
-      return res.Objects.concat(
-        await getPaginatedRequestBrightspace(res.Next, true)
-      );
-    else if ('PagingInfo' in res && res.PagingInfo.HasMoreItems) {
-      const page = new URL(url);
-      page.searchParams.set('bookmark', res.PagingInfo.Bookmark);
-      return res.Items.concat(
-        await getPaginatedRequestBrightspace(page.toString(), true)
-      );
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return [];
+    const res = (await response.json()) as PaginatedAPIResponse<T>;
+    if (!res) return [];
+    if (recurse) {
+      if ('Next' in res && res.Next)
+        return (res.Objects || []).concat(
+          await getPaginatedRequestBrightspace(res.Next, true)
+        );
+      else if (
+        'PagingInfo' in res &&
+        res.PagingInfo &&
+        res.PagingInfo.HasMoreItems
+      ) {
+        const page = new URL(url);
+        page.searchParams.set('bookmark', res.PagingInfo.Bookmark);
+        return (res.Items || []).concat(
+          await getPaginatedRequestBrightspace(page.toString(), true)
+        );
+      }
     }
+    if ('Items' in res && Array.isArray(res.Items)) return res.Items;
+    if ('Objects' in res && Array.isArray(res.Objects)) return res.Objects;
+    return [];
+  } catch (err) {
+    console.error(err);
+    return [];
   }
-  return 'Items' in res ? res.Items : res.Objects;
 }
 
 async function getCourseColors(

@@ -7,14 +7,15 @@ function colorsKey(platformKey: string) {
 }
 
 export function colorFromId(id: string | number) {
+  const len = DEFAULT_DASHBOARD_COLORS.length;
   if (typeof id === 'number')
-    return DEFAULT_DASHBOARD_COLORS[id % DEFAULT_DASHBOARD_COLORS.length];
+    return DEFAULT_DASHBOARD_COLORS[((id % len) + len) % len];
   let hash = 0;
-  for (let i = 0, len = id.length; i < len; i++) {
+  for (let i = 0, strLen = id.length; i < strLen; i++) {
     hash = hash + id.charCodeAt(i);
     hash |= 0;
   }
-  return DEFAULT_DASHBOARD_COLORS[hash % DEFAULT_DASHBOARD_COLORS.length];
+  return DEFAULT_DASHBOARD_COLORS[((hash % len) + len) % len];
 }
 
 export async function loadCustomColors(
@@ -65,10 +66,11 @@ export function watchCustomColors(
   const listener = (changes: {
     [key: string]: chrome.storage.StorageChange;
   }) => {
-    if (key in changes) {
+    if (key in changes && changes[key].newValue) {
       Object.entries(changes[key].newValue).forEach(
         (entry: [string, unknown]) => {
           if (
+            changes[key].oldValue &&
             entry[0] in changes[key].oldValue &&
             changes[key].oldValue[entry[0]] == entry[1]
           )

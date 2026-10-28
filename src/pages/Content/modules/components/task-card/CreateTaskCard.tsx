@@ -67,7 +67,7 @@ export default function CreateTaskCard({
 }: TaskProps): JSX.Element {
   const darkMode = useContext(DarkContext);
   const [formVisible, setFormVisible] = useState(false);
-  function onClick(e: React.MouseEvent<HTMLInputElement>) {
+  function onClick(e: React.MouseEvent<HTMLElement>) {
     e.preventDefault();
     setFormVisible(true);
   }

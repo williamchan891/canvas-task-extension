@@ -33,7 +33,7 @@ export default function AnnouncementCard({
   const lms = useContext(LMSContext);
   if (complete) color = color + '99';
   const posted_ago = fmtDateSince(assignment.due_at);
-  function onClick(e: React.MouseEvent<HTMLInputElement>) {
+  function onClick(e: React.MouseEvent<HTMLElement>) {
     e.preventDefault();
     window.location.href = assignment.html_url;
   }
@@ -54,7 +54,7 @@ export default function AnnouncementCard({
     >
       <TaskLeft
         color={
-          (!skeleton ? color : darkMode ? '#3f3f46' : '#e8e8e8') || '000000'
+          (!skeleton ? color : darkMode ? '#3f3f46' : '#e8e8e8') || '#000000'
         }
         onClick={onClick}
       >

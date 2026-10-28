@@ -35,7 +35,8 @@ export default function useChartData(
           id: b.course_id,
           value: 0,
           max: 0,
-          color: courseStore.state[b.course_id].color,
+          color:
+            courseStore.state[b.course_id]?.color || defaultColor || '#000000',
         });
         return a;
       }
@@ -45,7 +46,8 @@ export default function useChartData(
           id: b.course_id,
           value: 0,
           max: 0,
-          color: courseStore.state[b.course_id].color || '#000000',
+          color:
+            courseStore.state[b.course_id]?.color || defaultColor || '#000000',
         });
       }
 

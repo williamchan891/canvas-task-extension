@@ -14,6 +14,10 @@ delete config.chromeExtensionBoilerplate;
 
 config.mode = 'production';
 
-webpack(config, function (err) {
+webpack(config, function (err, stats) {
   if (err) throw err;
+  if (stats && stats.hasErrors()) {
+    console.error(stats.toString());
+    process.exit(1);
+  }
 });

@@ -43,8 +43,10 @@ export async function loadCustomTasks(
 export async function deleteCustomTask(platformKey: string, id: string) {
   const key = `${platformKey}_task`;
   const tasks = await chrome.storage.local.get(key);
-  if (id in tasks[key]) delete tasks[key][id];
-  chrome.storage.local.set({ [key]: tasks[key] });
+  if (tasks && tasks[key] && id in tasks[key]) {
+    delete tasks[key][id];
+    chrome.storage.local.set({ [key]: tasks[key] });
+  }
 }
 
 /* Create a custom task item (Planner note). */

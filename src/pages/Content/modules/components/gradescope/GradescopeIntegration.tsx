@@ -28,14 +28,18 @@ export default function GradescopeIntegration({
       [key: string]: chrome.storage.StorageChange;
     }) => {
       const key = 'GSCOPE_INT_course_id_map';
-      if (key in changes) {
+      if (key in changes && changes[key].newValue) {
         const isSynced = course in changes[key].newValue;
         setSynced(isSynced);
         if (isSynced) updateCourseTasks([course]);
       }
       if (promo) {
         const key = 'GSCOPE_INT_promo';
-        if (key in changes && changes[key].newValue.includes(course))
+        if (
+          key in changes &&
+          changes[key].newValue &&
+          changes[key].newValue.includes(course)
+        )
           setShowPromo(false);
       }
     };

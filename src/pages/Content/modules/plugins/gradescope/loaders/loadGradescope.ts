@@ -21,7 +21,8 @@ function getAssignmentURL(course: string, id: string) {
 function parseScore(status: string): [number, number] | null {
   try {
     const parts = status.split('/').map((s) => parseFloat(s.trim()));
-    if (parts.length === 2) return [parts[0], parts[1]];
+    if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1]))
+      return [parts[0], parts[1]];
     return null;
   } catch (e) {
     console.error(e);
@@ -33,7 +34,6 @@ function convertToAssignment(
   task: GradescopeTask,
   canvasCourse: string
 ): FinalAssignment {
-  AssignmentDefaults;
   const parsedScore = parseScore(task.status) || null;
   return {
     ...AssignmentDefaults,

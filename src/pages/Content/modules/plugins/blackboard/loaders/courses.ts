@@ -14,13 +14,21 @@ export async function getPaginatedRequestBlackboard<T>(
   url: string,
   recurse = false
 ): Promise<T[]> {
-  const res = (await (await fetch(url)).json()) as PaginatedAPIResponse<T>;
-  if (recurse && 'paging' in res && res.paging) {
-    return res.results.concat(
-      await getPaginatedRequestBlackboard(res.paging.nextPage, true)
-    );
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return [];
+    const res = (await response.json()) as PaginatedAPIResponse<T>;
+    if (!res || !Array.isArray(res.results)) return [];
+    if (recurse && 'paging' in res && res.paging && res.paging.nextPage) {
+      return res.results.concat(
+        await getPaginatedRequestBlackboard(res.paging.nextPage, true)
+      );
+    }
+    return res.results;
+  } catch (err) {
+    console.error(err);
+    return [];
   }
-  return res.results;
 }
 
 export type BlackboardCalendarItemType = '';

@@ -169,7 +169,14 @@ function compareProps(
   prevProps: ContentLoaderProps,
   nextProps: ContentLoaderProps
 ) {
-  return prevProps.clickable == nextProps.clickable;
+  return (
+    prevProps.clickable === nextProps.clickable &&
+    prevProps.firstLoad === nextProps.firstLoad &&
+    prevProps.options === nextProps.options &&
+    prevProps.startDate.getTime() === nextProps.startDate.getTime() &&
+    prevProps.endDate.getTime() === nextProps.endDate.getTime() &&
+    prevProps.lms === nextProps.lms
+  );
 }
 
 export default React.memo(ContentLoader, compareProps);

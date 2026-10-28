@@ -28,7 +28,10 @@ export async function setCustomOverride(
   };
   if (status === AssignmentStatus.DELETED) {
     delete newOverrides[overrideId];
-    deleteCustomTask('gradescope_custom', id);
+    await deleteCustomTask(platformKey, id);
+    if (platformKey !== 'gradescope_custom') {
+      await deleteCustomTask('gradescope_custom', id);
+    }
   }
   chrome.storage.local.set({ [key]: newOverrides });
 

@@ -52,13 +52,16 @@ async function queryNeedsGradingCounts(
 
     const ret: Record<string, NeedsGradingCount> = {};
     ids.forEach((id, idx) => {
+      const item =
+        counts[`item${idx}`] || (counts[keys[idx]] as GQLResponse[string]);
+      const nodes = item?.submissionsConnection?.nodes || [];
       ret[id] = {
         id: id,
-        total: counts[keys[idx]].submissionsConnection?.nodes.length,
-        needs_grading: counts[keys[idx]].submissionsConnection?.nodes.filter(
+        total: nodes.length,
+        needs_grading: nodes.filter(
           (x: { gradingStatus: string }) => x.gradingStatus === 'needs_grading'
         ).length,
-      } as NeedsGradingCount;
+      };
     });
     return ret;
   } catch (err) {

@@ -15,12 +15,15 @@ async function getCoursePositions(): Promise<Record<string, number>> {
     `${baseURL()}/api/v1/users/self/dashboard_positions`
   );
 
-  Object.keys(data.dashboard_positions).forEach((course_id) => {
-    data.dashboard_positions[course_id.substring(7)] =
-      data.dashboard_positions[course_id];
-  });
+  if (data && data.dashboard_positions) {
+    Object.keys(data.dashboard_positions).forEach((course_id) => {
+      data.dashboard_positions[course_id.substring(7)] =
+        data.dashboard_positions[course_id];
+    });
+    return data.dashboard_positions;
+  }
 
-  return data.dashboard_positions;
+  return {};
 }
 
 async function getCourseColors(
@@ -30,14 +33,19 @@ async function getCourseColors(
 
   const { data } = await axios.get(`${baseURL()}/api/v1/users/self/colors`);
 
-  /* course_xxxxxx from api, we only want xxxxxx */
-  Object.keys(data.custom_colors).forEach((course_id) => {
-    data.custom_colors[course_id.substring(7)] = data.custom_colors[course_id];
-  });
+  if (data && data.custom_colors) {
+    /* course_xxxxxx from api, we only want xxxxxx */
+    Object.keys(data.custom_colors).forEach((course_id) => {
+      data.custom_colors[course_id.substring(7)] =
+        data.custom_colors[course_id];
+    });
 
-  data.custom_colors['0'] = defaultColor || THEME_COLOR;
+    data.custom_colors['0'] = defaultColor || THEME_COLOR;
 
-  return data.custom_colors;
+    return data.custom_colors;
+  }
+
+  return { '0': defaultColor || THEME_COLOR };
 }
 
 /* Apply user-chosen course positions. */

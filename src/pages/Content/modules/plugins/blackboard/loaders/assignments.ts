@@ -66,8 +66,15 @@ async function getGradebookColumnsRequest(courseId: string) {
 }
 
 async function getAssignmentLink(courseId: string, contentId: string) {
-  const url = `${baseURL()}/learn/api/public/v1/courses/${courseId}/contents/${contentId}?fields=links`;
-  return (await (await fetch(url)).json()) as BlackboardContentLink;
+  try {
+    const url = `${baseURL()}/learn/api/public/v1/courses/${courseId}/contents/${contentId}?fields=links`;
+    const response = await fetch(url);
+    if (!response.ok) return { links: [] } as BlackboardContentLink;
+    return (await response.json()) as BlackboardContentLink;
+  } catch (err) {
+    console.error(err);
+    return { links: [] } as BlackboardContentLink;
+  }
 }
 
 async function getAttemptsRequest(courseId: string, column: string) {
@@ -113,11 +120,11 @@ function parseAssignment(
     plannable_id: col.id + '', // gradebook column id
     type: AssignmentType.ASSIGNMENT,
     html_url: '/',
-    due_at: col.grading.due || '',
+    due_at: col.grading?.due || '',
     course_id: courseId,
     submitted: false,
     graded: false,
-    points_possible: col.score.possible,
+    points_possible: col.score?.possible ?? 0,
     score: 0,
   };
 
@@ -167,7 +174,6 @@ async function collectAnnouncements(
   const announcements: FinalAssignment[] = Array.prototype.concat(
     ...(await Promise.all(courses.map((c) => getAnnouncements(c))))
   );
-  console.log(announcements);
 
   return announcements;
 }
@@ -183,8 +189,8 @@ async function collectAssignments(
   const assignments = await Promise.all(
     Array.prototype.concat(
       ...cols.map((course_cols, i) =>
-        course_cols
-          .filter((c) => c.grading.type === 'Attempts')
+        (course_cols || [])
+          .filter((c) => c.grading?.type === 'Attempts')
           .map((c) => parseAssignment(courses[i].id, c))
       )
     )

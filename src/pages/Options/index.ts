@@ -333,7 +333,10 @@ setPeriods();
 
 chrome.storage.sync.get(storedUserOptions, (items) => {
   const options = applyDefaults(items as Options);
-  setSelectedPeriod(options.period.toLowerCase());
+  const periodKey =
+    Object.keys(periods).find((k) => periods[k] === options.period) ||
+    options.period.toLowerCase();
+  setSelectedPeriod(periodKey);
   setCheckbox('show-rings', options.show_rings);
   setCheckbox('rolling-period', options.rolling_period);
   setCheckbox('default-sidebar', !options.sidebar);
@@ -360,21 +363,13 @@ chrome.storage.sync.get(storedUserOptions, (items) => {
     'weekdays-options',
     'weekday-selected'
   );
-  if (options.start_hour >= 12) {
-    setSelectedDropdownOption(
-      '' + (((options.start_hour - 1) % 12) + 1),
-      'hours-options',
-      'hours-selected'
-    );
-    setSelectedDropdownOption('pm', 'ampm-options', 'ampm-selected');
-  } else {
-    setSelectedDropdownOption(
-      '' + options.start_hour,
-      'hours-options',
-      'hours-selected'
-    );
-    setSelectedDropdownOption('am', 'ampm-options', 'ampm-selected');
-  }
+  const hour12 = ((options.start_hour + 11) % 12) + 1;
+  setSelectedDropdownOption('' + hour12, 'hours-options', 'hours-selected');
+  setSelectedDropdownOption(
+    options.start_hour >= 12 ? 'pm' : 'am',
+    'ampm-options',
+    'ampm-selected'
+  );
   setSelectedDropdownOption(
     (options.start_minutes < 10 ? '0' : '') + options.start_minutes,
     'minutes-options',

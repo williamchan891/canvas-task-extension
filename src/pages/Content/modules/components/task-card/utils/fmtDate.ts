@@ -24,10 +24,11 @@ export function fmtDateSince(date: string): string {
   const DAY = HOUR * 24;
   const WEEK = 7 * DAY;
   const diff = now - announced;
+  if (diff < MINUTE) return 'just now';
   let res = [0, ''];
-  if (diff > WEEK) res = [diff / WEEK, 'week'];
-  else if (diff > DAY) res = [diff / DAY, 'day'];
-  else if (diff > HOUR) res = [diff / HOUR, 'hour'];
+  if (diff >= WEEK) res = [diff / WEEK, 'week'];
+  else if (diff >= DAY) res = [diff / DAY, 'day'];
+  else if (diff >= HOUR) res = [diff / HOUR, 'hour'];
   else res = [diff / MINUTE, 'min'];
   return `${Math.floor(res[0] as number)} ${res[1]}${
     Math.floor(res[0] as number) !== 1 ? 's' : ''

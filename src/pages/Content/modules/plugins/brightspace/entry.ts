@@ -24,7 +24,7 @@ function makeColorPicker(
   defaultColor: string,
   card: HTMLElement
 ) {
-  const wrapper = document.createElement('wrapper');
+  const wrapper = document.createElement('div');
   const picker = document.createElement('input');
   wrapper.appendChild(picker);
   picker.type = 'color';
@@ -159,7 +159,9 @@ async function setColorPickers() {
 }
 
 export default async function BrightspaceEntrypoint() {
+  if (document.getElementById('tfc-brightspace-root')) return;
   const root = document.createElement('div');
+  root.id = 'tfc-brightspace-root';
   root.style.setProperty('line-height', '1.5');
   root.textContent = 'Tasks for D2L Brightspace';
   root.className = 'd2l-tile d2l-widget';

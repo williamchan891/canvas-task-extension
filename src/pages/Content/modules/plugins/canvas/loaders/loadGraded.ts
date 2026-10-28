@@ -48,11 +48,10 @@ export async function queryGraded(
     const ret: Record<string, GradeStatus> = {};
     ids.forEach((id, idx) => {
       // will be null if id is invalid
-      if (
-        counts[keys[idx]] &&
-        counts[keys[idx]].submissionsConnection?.nodes.length
-      ) {
-        const res = counts[keys[idx]].submissionsConnection?.nodes[0];
+      const item =
+        counts[`item${idx}`] || (counts[keys[idx]] as GQLResponse[string]);
+      if (item && item.submissionsConnection?.nodes?.length) {
+        const res = item.submissionsConnection.nodes[0];
         ret[id] = {
           score: res.score ? res.score : 0,
           grade: res.grade ? res.grade : '',

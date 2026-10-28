@@ -2,6 +2,7 @@ var webpack = require('webpack'),
   path = require('path'),
   fileSystem = require('fs-extra'),
   env = require('./utils/env'),
+  pkg = require('./package.json'),
   { CleanWebpackPlugin } = require('clean-webpack-plugin'),
   BundleAnalyzerPlugin =
     require('webpack-bundle-analyzer').BundleAnalyzerPlugin,
@@ -135,11 +136,18 @@ var options = (args) => {
             force: true,
             transform: function (content) {
               // generates the manifest file using the package.json informations
+              const manifest = JSON.parse(content.toString());
               return Buffer.from(
                 JSON.stringify({
-                  description: process.env.npm_package_description,
-                  version: process.env.npm_package_version,
-                  ...JSON.parse(content.toString()),
+                  ...manifest,
+                  description:
+                    process.env.npm_package_description ||
+                    pkg.description ||
+                    manifest.description,
+                  version:
+                    process.env.npm_package_version ||
+                    pkg.version ||
+                    manifest.version,
                 })
               );
             },
@@ -173,7 +181,7 @@ var options = (args) => {
       new HtmlWebpackPlugin({
         template: path.join(__dirname, 'src', 'pages', 'Popup', 'index.html'),
         filename: 'popup.html',
-        chunks: ['popup'],
+        chunks: [],
         cache: false,
       }),
       new webpack.DefinePlugin({

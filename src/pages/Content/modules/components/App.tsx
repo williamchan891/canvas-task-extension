@@ -34,7 +34,6 @@ export default function App({
     setClickableState({ clickable: false, firstLoad: false })
   );
   const { start, end } = useMemo(() => {
-    setClickableState({ clickable: false, firstLoad: false });
     return getPeriod(
       optionsStore.state.period,
       optionsStore.state.start_date,

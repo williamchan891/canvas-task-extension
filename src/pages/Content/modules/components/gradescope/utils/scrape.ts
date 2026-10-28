@@ -32,53 +32,58 @@ export async function updateCourseTasks(
 }
 
 async function getCourseTasks(gid: string): Promise<GradescopeTask[]> {
-  const page = await (
-    await fetch('https://www.gradescope.com/courses/' + gid)
-  ).text();
-  // DOMParser is safe from XSS as long as nodes aren't injected into the window DOM
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(page, 'text/html');
-  const table = doc.getElementById('assignments-student-table');
-  const tbody = table?.getElementsByTagName('tbody');
-  if (!tbody || !tbody.length) return [];
-  const rows = tbody[0].getElementsByTagName('tr');
-  return Array.from(rows)
-    .map((r) => {
-      const _button = r.getElementsByTagName('button')[0];
-      let id: string | null, name: string | null;
-      if (_button) {
-        // unsubmitted/new
-        id = _button.getAttribute('data-assignment-id');
-        name = _button.textContent;
-      } else {
-        // already submitted/past
-        const _a = r.getElementsByTagName('a')[0];
-        if (!_a) {
-          id = null;
-          const _th = r.getElementsByTagName('th')[0];
-          if (!_th) name = null;
-          else name = name = _th.textContent;
+  try {
+    const response = await fetch('https://www.gradescope.com/courses/' + gid);
+    if (!response.ok) return [];
+    const page = await response.text();
+    // DOMParser is safe from XSS as long as nodes aren't injected into the window DOM
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(page, 'text/html');
+    const table = doc.getElementById('assignments-student-table');
+    const tbody = table?.getElementsByTagName('tbody');
+    if (!tbody || !tbody.length) return [];
+    const rows = tbody[0].getElementsByTagName('tr');
+    return Array.from(rows)
+      .map((r) => {
+        const _button = r.getElementsByTagName('button')[0];
+        let id: string | null, name: string | null;
+        if (_button) {
+          // unsubmitted/new
+          id = _button.getAttribute('data-assignment-id');
+          name = _button.textContent;
         } else {
-          id = _a.href.split('/')[6];
-          name = _a.textContent;
+          // already submitted/past
+          const _a = r.getElementsByTagName('a')[0];
+          if (!_a) {
+            id = null;
+            const _th = r.getElementsByTagName('th')[0];
+            if (!_th) name = null;
+            else name = _th.textContent;
+          } else {
+            id = _a.href.split('/')[6];
+            name = _a.textContent;
+          }
         }
-      }
-      const status =
-        r.getElementsByClassName('submissionStatus')[0].textContent;
-      const dueNode = r.getElementsByClassName(
-        'submissionTimeChart--dueDate'
-      )[0];
-      let due_date = dueNode ? dueNode.getAttribute('datetime') : '';
-      if (due_date) due_date = new Date(due_date).toISOString();
-      return {
-        id: id || '',
-        gid,
-        name: name || '',
-        status,
-        due_date: due_date || null,
-      } as GradescopeTask;
-    })
-    .filter((t) => !!t.name && !!t.status && !!t.due_date);
+        const status =
+          r.getElementsByClassName('submissionStatus')[0]?.textContent || '';
+        const dueNode = r.getElementsByClassName(
+          'submissionTimeChart--dueDate'
+        )[0];
+        let due_date = dueNode ? dueNode.getAttribute('datetime') : '';
+        if (due_date) due_date = new Date(due_date).toISOString();
+        return {
+          id: id || '',
+          gid,
+          name: name || '',
+          status,
+          due_date: due_date || null,
+        } as GradescopeTask;
+      })
+      .filter((t) => !!t.name && !!t.status && !!t.due_date);
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
 }
 
 async function getCanvasCourses(): Promise<Record<string, string>> {

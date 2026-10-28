@@ -290,13 +290,17 @@ export default function TaskList({
     tab: TaskTypeTab,
     { key, data: assignment, state }: TaskCardTransitionProps
   ) => {
+    const course =
+      courseStore.state[assignment.course_id] || courseStore.state['0'];
+    const courseColor = course?.color || options.theme_color || THEME_COLOR;
+    const courseName = course?.name || 'Custom Task';
     return tab !== 'Announcements' ? (
       <TaskCard
         assignment={assignment}
         clock24hr={options.clock_24hr}
-        color={courseStore.state[assignment.course_id].color}
+        color={courseColor}
         complete={assignmentIsDone(assignment)}
-        course_name={courseStore.state[assignment.course_id].name}
+        course_name={courseName}
         key={key}
         markComplete={markAssignmentFunc(
           assignment.id,
@@ -315,9 +319,9 @@ export default function TaskList({
     ) : (
       <AnnouncementCard
         assignment={assignment}
-        color={courseStore.state[assignment.course_id].color}
+        color={courseColor}
         complete={assignmentIsDone(assignment)}
-        course_name={courseStore.state[assignment.course_id].name}
+        course_name={courseName}
         key={key}
         markComplete={markAssignmentFunc(
           assignment.id,

@@ -106,6 +106,10 @@ export default function DynamicSettings({ options }: Props): JSX.Element {
                 id: 'Day',
               },
               {
+                name: 'Three Days',
+                id: 'ThreeDay',
+              },
+              {
                 name: 'Week',
                 id: 'Week',
               },

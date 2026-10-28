@@ -27,7 +27,7 @@ function createSidebarWhenCanvasReady() {
         teacherTodoListContainers?.length > 0 ||
         comingUpContainers?.length > 0
       )
-        createSidebar(rightSide);
+        createSidebar(rightSide, observer);
     });
 
     /*

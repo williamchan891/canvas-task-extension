@@ -32,13 +32,6 @@ if (CanvasLMSConfig.isActive) {
   console.log('Tasks for Canvas: Canvas detected');
 
   CanvasLMSEntrypoint();
-
-  /* 
-  Allow user to modify critical settings directly on the install page
-  */
-  if (isInstallSettings) {
-    InstallSettingsEntrypoint();
-  }
 } else if (isGradescope) {
   console.log('Tasks for Canvas: Gradescope detected');
 
@@ -51,4 +44,9 @@ if (CanvasLMSConfig.isActive) {
   console.log('Tasks for Canvas: Brightspace detected');
 
   BrightspaceEntrypoint();
+} else if (isInstallSettings) {
+  /* 
+  Allow user to modify critical settings directly on the install page
+  */
+  InstallSettingsEntrypoint();
 }

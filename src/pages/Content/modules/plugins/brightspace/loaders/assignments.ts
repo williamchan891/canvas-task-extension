@@ -55,7 +55,11 @@ function parseAssignments(assignments: BrightspaceItem[]): FinalAssignment[] {
     plannable_id: assignment.ItemId + '', // unused
     type: parseActivityType(assignment.ActivityType), // todo: link based off ActivityType
     html_url: assignment.ItemUrl || '/',
-    due_at: new Date('2024-03-29').toISOString(),
+    due_at:
+      assignment.DueDate ||
+      assignment.EndDate ||
+      assignment.StartDate ||
+      new Date().toISOString(),
     course_id: assignment.OrgUnitId,
     submitted: !!assignment.DateCompleted,
     graded: false,

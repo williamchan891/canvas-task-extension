@@ -166,11 +166,14 @@ export interface TransitionState {
   height: number;
 }
 
-function roundAssignmentScore(score: number | object) {
+function roundAssignmentScore(score: number | object | null | undefined) {
+  if (score === null || typeof score === 'undefined') return 0;
   if (typeof score === 'number') return Math.round(score * 100) / 100;
-  else if (typeof score === 'object')
+  else if (typeof score === 'object') {
     // BigNumber or bigint
-    return Math.round(parseFloat(score.toString()) * 100) / 100;
+    const parsed = parseFloat(score.toString());
+    return isNaN(parsed) ? 0 : Math.round(parsed * 100) / 100;
+  }
   return score;
 }
 
@@ -194,7 +197,7 @@ export default function TaskCard({
   const gradedSince = assignment.graded_at
     ? fmtDateSince(assignment.graded_at)
     : '';
-  function onClick(e: React.MouseEvent<HTMLInputElement>) {
+  function onClick(e: React.MouseEvent<HTMLElement>) {
     e.preventDefault();
     window.location.href = assignment.html_url;
   }
@@ -259,7 +262,7 @@ export default function TaskCard({
     >
       <TaskLeft
         color={
-          (!skeleton ? color : darkMode ? '#3f3f46' : '#e8e8e8') || '000000'
+          (!skeleton ? color : darkMode ? '#3f3f46' : '#e8e8e8') || '#000000'
         }
         onClick={onClick}
       >
