@@ -5,10 +5,11 @@ When contributing to this repository, please first discuss the change you wish t
 ## Pull Request Process
 
 1. Make sure all changes have been tested locally under `npm run build`.
-2. Make sure the linter, formatter, and all tests pass:
-   ```
+2. Make sure the type checker, linter, formatter, and all tests pass:
+   ```bash
+   npm run typecheck
    npm run lint
-   npm run prettier
+   npm run format:check  # or npm run prettier to auto-format
    npm test
    ```
 3. If the formatter made any new changes, remember to commit them again.

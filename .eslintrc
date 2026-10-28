@@ -2,11 +2,10 @@
   "plugins": ["react", "jest", "@typescript-eslint"],
   "extends": [
     "eslint:recommended",
-    "plugin:react/all",
+    "plugin:react/recommended",
     "plugin:prettier/recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
-    "prettier/react",
     "plugin:jest/recommended"
   ],
   "rules": {
